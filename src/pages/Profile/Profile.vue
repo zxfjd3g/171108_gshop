@@ -2,7 +2,7 @@
   <div class="profile">
     <header-top title="我的"/>
     <section class="profile-number">
-      <a href="javascript:" class="profile-link">
+      <router-link class="profile-link" to="/login">
         <div class="profile_image">
           <i class="iconfont icon-person"></i>
         </div>
@@ -16,9 +16,9 @@
           </p>
         </div>
         <span class="arrow">
-              <i class="iconfont icon-jiantou1"></i>
-            </span>
-      </a>
+          <i class="iconfont icon-jiantou1"></i>
+        </span>
+      </router-link>
     </section>
     <section class="profile_info_data border-1px">
       <ul class="info_data_list">
