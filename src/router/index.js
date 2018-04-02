@@ -36,4 +36,3 @@ export default new VueRouter({ // 配置对象
 
   ]
 })
-
