@@ -11,9 +11,9 @@ import FootGuide from './components/FootGuide/FootGuide.vue'
 import {reqAddress} from './api'
 export default {
 
-  async mounted () {
-    const result = await reqAddress('40.10038,116.37867')
-    console.log(result)
+  mounted () {
+    // 通知vuex的getAddress异步获取address数据
+    this.$store.dispatch('getAddress')
   },
 
   components: {
