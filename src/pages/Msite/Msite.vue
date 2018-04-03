@@ -12,112 +12,21 @@
     </HeaderTop>
     <!--首页导航-->
     <nav class="msite_nav border-1px">
-      <div class="swiper-container">
+      <div class="swiper-container" v-if="categorys.length>0">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
+          <div class="swiper-slide" v-for="(categorys, index) in categorysArr" :key="index">
+            <a href="javascript:" class="link_to_food" v-for="(c, index2) in categorys" :key="index2">
               <div class="food_container">
-                <img src="./images/nav/1.jpg">
+                <img :src="imgBaseUrl+c.image_url">
               </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/3.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/4.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/5.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/6.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/7.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/8.jpg">
-              </div>
-              <span>土豪推荐</span>
-            </a>
-          </div>
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/9.jpg">
-              </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/10.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/11.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/12.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/13.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/14.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/1.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>土豪推荐</span>
+              <span>{{c.title}}</span>
             </a>
           </div>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
       </div>
+      <img src="./images/msite_back.svg" v-else>
     </nav>
     <!--首页附近商家-->
     <div class="msite_shop_list border-1px">
@@ -140,18 +49,80 @@
 
   export default {
 
+    data () {
+      return {
+        imgBaseUrl: 'https://fuss10.elemecdn.com'
+      }
+    },
+
     mounted () {
+
+      //异步获取食品分类列表
+      this.$store.dispatch('getCategorys')
+      // 异步获取shops
+      this.$store.dispatch('getShops')
+
       // 创建swiper对象, 实现轮播效果
-      new Swiper('.swiper-container', { // 配置对象
+     /* new Swiper('.swiper-container', { // 配置对象
         loop: true, // 是否循环轮播,
         pagination: { // 指定分页器容器
           el: '.swiper-pagination',
         },
-      })
+      })*/
     },
 
     computed: {
-      ...mapState(['address'])
+      ...mapState(['address', 'categorys']),
+
+      categorysArr () {
+        const arr = [] // 二维数组
+        const {categorys} = this // 所有分类的一维数组
+        let smallArr = [] // 内部的小数组
+        const max = 8 //小数组的最大长度是8
+
+        // 遍历所有分类
+        categorys.forEach(c => {
+
+          // 如果smallArr是一个空数组, 将小数组保存到二维数组
+          if(smallArr.length===0) {
+            arr.push(smallArr)
+          }
+
+          // 将分类保存到小数组中
+          smallArr.push(c)
+
+          // 一旦小数组满了, 准备一个新的
+          if(smallArr.length===max) {
+            smallArr = []
+          }
+
+        })
+
+        return arr  // [[{分类对象}, {分类对象}], [{分类对象}]]
+      }
+    },
+
+    watch: {
+      // 更新状态之后, 会异步更新界面
+      categorys (value) { // categorys发生了变化(从后台获取到了数据)
+        /*setTimeout(() => {
+          new Swiper('.swiper-container', { // 配置对象
+            loop: true, // 是否循环轮播,
+            pagination: { // 指定分页器容器
+              el: '.swiper-pagination',
+            },
+          })
+        }, 200)*/
+        this.$nextTick(() => { // 回调函数在DOM更新之后立即调用
+          new Swiper('.swiper-container', { // 配置对象
+            loop: true, // 是否循环轮播,
+            pagination: { // 指定分页器容器
+              el: '.swiper-pagination',
+            },
+          })
+        })
+
+      }
     },
 
     components: {
