@@ -13,10 +13,12 @@
 
 ## 3. 搭建项目整体界面结构
     stylus的理解和使用
-        结构化, 变量, 函数/minxin(混合)
+        结构化, 变量, minxin(混合)
     vue-router的理解和使用
         $router: 路由器对象, 包含一些操作路由的功能函数, 来实现编程式导航(跳转路由)
         $route: 当前路由对象, 一些当前路由信息数据的容器, path/meta/query/params
+        <router-link>: 路由链接
+        <router-view>: 显示当前路由组件
     项目路由拆分
     底部导航组件: FooterGuide
     导航路由组件: Msite/Search/Order/Profile

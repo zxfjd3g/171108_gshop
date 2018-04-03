@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div id="app">
     <!--显示当前路由组件-->
     <router-view></router-view>
-    <FootGuide/>
+    <FootGuide v-show="$route.meta.showFooter"/>
   </div>
 </template>
 
@@ -23,5 +23,8 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  #app
+    width 100%
+    height 100%
 
 </style>

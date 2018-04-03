@@ -34,6 +34,11 @@
 
 <script>
   export default {
+
+    mounted () {
+      console.log(this.$route)
+    },
+
     methods: {
       goto (path) {
         // 跳转到指定path的路由
