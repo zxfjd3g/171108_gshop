@@ -5,13 +5,19 @@ import {
   RECEIVE_SHOPS,
   RECEIVE_ADDRESS,
   RECEIVE_CATEGORYS,
-  RECEIVE_USER_INFO
+  RECEIVE_USER_INFO,
+  RECEIVE_SHOP_GOODS,
+  RECEIVE_SHOP_INFO,
+  RECEIVE_SHOP_RATINGS
 } from './mutation-types'
 import {
   reqAddress,
   reqFoodList,
   reqShopList,
-  reqUserInfo
+  reqUserInfo,
+  reqShopGoods,
+  reqShopRatings,
+  reqShopInfo
 } from '../api'
 
 
@@ -56,17 +62,45 @@ export default {
   },
 
   // 存储指定的用户
-  saveUserInfo ({commit}, userInfo) {
+  saveUserInfo({commit}, userInfo) {
     commit(RECEIVE_USER_INFO, {userInfo})
   },
 
   // 异步获取用户
-  async getUserInfo ({commit}) {
+  async getUserInfo({commit}) {
     const result = await reqUserInfo()
-    if(result.code===0) {
+    if (result.code === 0) {
       const userInfo = result.data
       commit(RECEIVE_USER_INFO, {userInfo})
     }
-  }
+  },
+
+  // 异步获取商家商品列表
+  async getShopGoods({commit}) {
+    const result = await reqShopGoods()
+    if (result.code === 0) {
+      const shopGoods = result.data
+      commit(RECEIVE_SHOP_GOODS, {shopGoods})
+    }
+  },
+
+  // 异步获取商家评论列表
+  async getShopRatings({commit}) {
+    const result = await reqShopRatings()
+    if (result.code === 0) {
+      const shopRatings = result.data
+      commit(RECEIVE_SHOP_RATINGS, {shopRatings})
+    }
+  },
+
+  // 异步获取商家信息
+  async getShopInfo({commit}) {
+    const result = await reqShopInfo()
+    if (result.code === 0) {
+      const shopInfo = result.data
+      commit(RECEIVE_SHOP_INFO, {shopInfo})
+    }
+  },
+
 
 }

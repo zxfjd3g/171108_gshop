@@ -5,7 +5,7 @@
 import axios from 'axios'
 
 export default function ajax(url='', data={}, method='GET') {
-  // debugger
+  debugger
   return new Promise(function (resolve, reject) {
     let promise
     if(method==='GET') {// /login?name=tom&pwd=123
@@ -17,9 +17,10 @@ export default function ajax(url='', data={}, method='GET') {
       })
       if(dataString) {
         dataString = dataString.substring(0, dataString.length-1) // 去掉最后的&
+        // /login?name=tom&pwd=123
+        url += '?' + dataString
       }
-      // /login?name=tom&pwd=123
-      url += '?' + dataString
+
 
       promise = axios.get(url)
     } else {
