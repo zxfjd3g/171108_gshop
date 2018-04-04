@@ -5,7 +5,7 @@
 import axios from 'axios'
 
 export default function ajax(url='', data={}, method='GET') {
-
+  // debugger
   return new Promise(function (resolve, reject) {
     let promise
     if(method==='GET') {// /login?name=tom&pwd=123

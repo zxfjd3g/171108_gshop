@@ -4,12 +4,14 @@ vuex最核心的管理对象store
 import {
   RECEIVE_SHOPS,
   RECEIVE_ADDRESS,
-  RECEIVE_CATEGORYS
+  RECEIVE_CATEGORYS,
+  RECEIVE_USER_INFO
 } from './mutation-types'
 import {
   reqAddress,
   reqFoodList,
-  reqShopList
+  reqShopList,
+  reqUserInfo
 } from '../api'
 
 
@@ -52,5 +54,19 @@ export default {
       commit(RECEIVE_SHOPS, {shops})
     }
   },
+
+  // 存储指定的用户
+  saveUserInfo ({commit}, userInfo) {
+    commit(RECEIVE_USER_INFO, {userInfo})
+  },
+
+  // 异步获取用户
+  async getUserInfo ({commit}) {
+    const result = await reqUserInfo()
+    if(result.code===0) {
+      const userInfo = result.data
+      commit(RECEIVE_USER_INFO, {userInfo})
+    }
+  }
 
 }

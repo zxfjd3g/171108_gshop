@@ -14,7 +14,7 @@ export const reqShopList = (longitude, latitude) => ajax('/api/shops', {longitud
 // latitude=40.10038&longitude=116.36867
 
 // [4、获取一次性验证码](#4获取一次性验证码)<br/>
-export const reqCaptcha = () => ajax('/api/captcha')
+// export const reqCaptcha = () => ajax('/api/captcha')
 
 // [5、用户名密码登陆](#4用户名密码登陆)<br/>
 export const loginPwd = ({name, pwd, captcha}) => ajax('/api/login_pwd', {name, pwd, captcha}, 'POST')

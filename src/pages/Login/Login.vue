@@ -15,7 +15,7 @@
               <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
 
               <button :disabled="computeTime>0 || !rightPhone" class="get_verification"
-                      :class="{right_phone_number: rightPhone}" @click="sendCode">
+                      :class="{right_phone_number: rightPhone}" @click.prevent="sendCode">
                 {{computeTime ? `已发送(${computeTime}s)` : '获取验证码'}}
               </button>
             </section>
@@ -49,7 +49,7 @@
               </section>
             </section>
           </div>
-          <button class="login_submit">登录</button>
+          <button class="login_submit" @click.prevent="login">登录</button>
         </form>
         <a href="javascript:;" class="about_us">关于我们</a>
       </div>
@@ -57,21 +57,28 @@
         <i class="iconfont icon-jiantou2"></i>
       </a>
     </div>
+    <AlertTip v-if="isShowAlert" :alertText="alertText" @closeTip="closeTip"/>
   </div>
 </template>
 
 <script>
+  import AlertTip from '../../components/AlertTip/AlertTip.vue'
+
+  import {loginPwd, loginSms, sendCode} from '../../api'
+
   export default {
     data () {
       return {
-        loginWay: false, // true代表短信登录, false代表密码登录
+        loginWay: true, // true代表短信登录, false代表密码登录
         phone: '', // 手机号
         code: '', // 短信验证码
         name: '', // 用户名
         pwd: '', // 密码
         captcha: '', // 图片验证码
         computeTime: 0, // 倒计时的时间
-        showPwd: false // 是否显示密码, 默认不显示
+        showPwd: false, // 是否显示密码, 默认不显示
+        isShowAlert: false, // 是否显示警告框
+        alertText: '', // 警告框的文本
       }
     },
 
@@ -83,24 +90,84 @@
     },
 
     methods: {
-      sendCode () {
+      async sendCode () {
         // 只有手机号合法, 才计时, 发送验证码请求
-        //if(this.rightPhone) {
-          //  开始计时
-          this.computeTime = 30
-          // 启动循环定时器: 每隔1s将computeTime减1
-          const intervalId = setInterval(() => {
-            this.computeTime--
-            // 一旦时间为0, 清除定时器
-            if(this.computeTime===0) {
-              clearInterval(intervalId)
-            }
-          }, 1000)
-        //}
+        //  开始计时
+        this.computeTime = 30
+        // 启动循环定时器: 每隔1s将computeTime减1
+        const intervalId = setInterval(() => {
+          this.computeTime--
+          // 一旦时间为0, 清除定时器
+          if(this.computeTime===0) {
+            clearInterval(intervalId)
+          }
+        }, 1000)
+        // 发ajax请求, 发送验证码短信
+        const result = await sendCode(this.phone)
+        if(result.code===1) { // 发送验证码失败
+          // 显示提示
+          this.showAlert(result.msg)
+          // 停止计时
+          clearInterval(intervalId)
+          this.computeTime = 0
+        }
       },
       updateCaptcha (event) {
         event.target.src='http://localhost:3000/captcha?time='+Date.now()
+      },
+
+      showAlert(text) {
+        this.isShowAlert = true
+        this.alertText = text
+      },
+
+      async login () {
+        // 前台表单验证, 如果不通过显示对应的提示
+        if(this.loginWay) { // phone, code
+          const {rightPhone, phone, code} = this
+          if(!rightPhone) { // 显示警告框
+            this.showAlert('手机号不正确')
+            return
+          } else if (!/^\d{6}$/.test(code)) {
+            this.showAlert('验证码不正确')
+            return
+          }
+
+          // 请求手机号/验证码登陆
+          const result = await loginSms({phone, code})
+          if(result.code===1) { // 失败
+            this.showAlert(result.msg)
+          } else { // 成功
+            // 将user保存到vuex中
+            const user = result.data
+            this.$store.dispatch('saveUserInfo', user)
+            // 回退到上一个路由
+            this.$router.replace('/profile')
+          }
+
+        } else { // name, pwd, captcha
+          const {name, pwd, captcha} = this
+          if(!name) { // 显示警告框
+            this.showAlert('必须指定用户名')
+            return
+          } else if(!pwd) { // 显示警告框
+            this.showAlert('必须指定密码')
+            return
+          } else if(!captcha) { // 显示警告框
+            this.showAlert('必须指定验证码')
+            return
+          }
+        }
+      },
+
+      closeTip () {
+        this.isShowAlert = false
+        this.alertText = ''
       }
+    },
+
+    components: {
+      AlertTip
     }
   }
 </script>

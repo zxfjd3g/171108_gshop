@@ -14,6 +14,8 @@ export default {
   mounted () {
     // 通知vuex的getAddress异步获取address数据
     this.$store.dispatch('getAddress')
+    // 通知vuex的getUserInfo异步获取用户信息数据
+    this.$store.dispatch('getUserInfo')
   },
 
   components: {
