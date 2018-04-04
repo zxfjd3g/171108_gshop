@@ -122,6 +122,7 @@
       },
 
       async login () {
+        let result
         // 前台表单验证, 如果不通过显示对应的提示
         if(this.loginWay) { // phone, code
           const {rightPhone, phone, code} = this
@@ -134,16 +135,7 @@
           }
 
           // 请求手机号/验证码登陆
-          const result = await loginSms({phone, code})
-          if(result.code===1) { // 失败
-            this.showAlert(result.msg)
-          } else { // 成功
-            // 将user保存到vuex中
-            const user = result.data
-            this.$store.dispatch('saveUserInfo', user)
-            // 回退到上一个路由
-            this.$router.replace('/profile')
-          }
+          result = await loginSms({phone, code})
 
         } else { // name, pwd, captcha
           const {name, pwd, captcha} = this
@@ -157,6 +149,19 @@
             this.showAlert('必须指定验证码')
             return
           }
+
+          // 请求用户名/密码码登陆
+          result = await loginPwd({name, pwd, captcha})
+        }
+
+        if(result.code===1) { // 失败
+          this.showAlert(result.msg)
+        } else { // 成功
+          // 将user保存到vuex中
+          const user = result.data
+          this.$store.dispatch('saveUserInfo', user)
+          // 回退到上一个路由
+          this.$router.replace('/profile')
         }
       },
 
