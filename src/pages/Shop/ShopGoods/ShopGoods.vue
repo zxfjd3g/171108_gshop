@@ -3,7 +3,8 @@
     <div class="goods">
       <div class="menu-wrapper">
         <ul>
-          <li class="menu-item" v-for="(good, index) in shopGoods" :key="index" :class="{current: false}">
+          <li class="menu-item" v-for="(good, index) in shopGoods" :key="index"
+              :class="{current: currentIndex===index}" @click="selectGood(index)">
             <span class="text bottom-border-1px">
               <span class="icon" :class="supportClasses[good.type]" v-if="good.type>=0"></span>
               {{good.name}}
@@ -12,7 +13,7 @@
         </ul>
       </div>
       <div class="foods-wrapper">
-        <ul>
+        <ul ref="foodsUl">
           <li class="food-list-hook" v-for="(good, index) in shopGoods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
@@ -52,23 +53,85 @@
 
     data () {
       return {
-        supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special']
+        supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special'],
+        tops: [], //所有分类li的top组成的数组
+        scrollY: 0, // 当前y轴滚动的坐标
       }
     },
 
     mounted () {
       this.$store.dispatch('getShopGoods', () => {// 状态已更新
         this.$nextTick(() => { // 更新也更新了
-          // 创建scroll对象(左侧)
-          new BScroll('.menu-wrapper')
-          // 创建scroll对象(右侧)
-          new BScroll('.foods-wrapper')
+          // 初始化滚动
+          this._initScroll()
+          // 初始化tops
+          this._initTops()
         })
       })
     },
 
     computed: {
-      ...mapState(['shopGoods'])
+      ...mapState(['shopGoods']),
+
+      // 计算出当前分类的下标
+      currentIndex () {
+        const {tops, scrollY} = this
+        // scrollY>=top && scrollY< 下一个top
+        return tops.findIndex((top, index) => scrollY>=top && scrollY< tops[index+1])
+      }
+    },
+
+    methods: {
+      _initTops () {
+        debugger
+        const tops = []
+        let top = 0
+        tops.push(top)
+        // 遍历所有分类的li计算出top, 并保存到tops中
+        const lis = this.$refs.foodsUl.getElementsByClassName('food-list-hook')
+        Array.prototype.slice.call(lis).forEach(li => {
+          top += li.clientHeight
+          tops.push(top)
+        })
+        // 更新状态
+        this.tops = tops
+        console.log(tops)
+      },
+      _initScroll () {
+        // 创建scroll对象(左侧)
+        new BScroll('.menu-wrapper', {
+          click: true //是否分发点击事件
+        })
+        // 创建scroll对象(右侧)
+        this.rightScroll = new BScroll('.foods-wrapper', {
+          probeType: 2,
+          click: true //是否分发点击事件
+        })
+
+        // 绑定scroll监听
+        this.rightScroll.on('scroll', (pos) => {
+          console.log(pos.x, pos.y)
+          //更新scrollY值
+          this.scrollY = Math.abs(pos.y)
+        })
+
+        // 绑定scrollEnd监听
+        this.rightScroll.on('scrollEnd', (pos) => {
+          console.log('scrollEnd', pos.x, pos.y)
+          //更新scrollY值
+          this.scrollY = Math.abs(pos.y)
+        })
+      },
+      selectGood (index) {
+        // alert('----')
+        // 得到对应位置的坐标
+        const y = -this.tops[index]
+
+        // this.scrollY = -y // 立即更新当前下标
+
+        // 右侧滚动到对应分类的位置
+        this.rightScroll.scrollTo(0, y, 300)
+      }
     }
   }
 </script>

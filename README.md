@@ -107,6 +107,10 @@
 
 ## 2. ShopGoods组件
 
+tops = [0, 10, 15, 21, 30]
+scrollY = 9
+currentIndex
+
 ## 3. CartControl组件
 
 ## 4. ShopCart组件
