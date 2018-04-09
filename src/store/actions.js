@@ -90,11 +90,13 @@ export default {
   },
 
   // 异步获取商家评论列表
-  async getShopRatings({commit}) {
+  async getShopRatings({commit}, cb) {
     const result = await reqShopRatings()
     if (result.code === 0) {
       const shopRatings = result.data
       commit(RECEIVE_SHOP_RATINGS, {shopRatings})
+      // 通知组件更新了状态
+      cb && cb()
     }
   },
 

@@ -66,8 +66,10 @@
   import BScroll from 'better-scroll'
   import CartControl from '../CartControl/CartControl.vue'
   import RatingSelect from '../RatingSelect/RatingSelect.vue'
+  import {ratingsMixin} from '../../common/mixins'
 
   export default {
+    mixins: [ratingsMixin],
     props: {
       food: Object
     },
@@ -75,41 +77,12 @@
     data () {
       return {
         isShow: false, // 是否显示
-        selectType: 0,
-        onlyContent: false
       }
     },
 
-    computed: {
-      filterRatings () {
-        const {selectType, onlyContent} = this
-        const {ratings} = this.food
 
-        return ratings.filter(rating => {
-          const {rateType, text} = rating
-          // 条件1:
-            // selectType: 0/1/2
-            // rateType: 0/1
-            // selectType===2 || selectType===rateType
-          // 条件2:
-            // onlyContent: true/false
-            // text: 有值/没值
-            // !onlyContent || text.length>0
-
-          return (selectType===2 || selectType===rateType) && (!onlyContent || text.length>0)
-        })
-      }
-    },
 
     methods: {
-
-      setSelectType (selectType) {
-        this.selectType = selectType
-      },
-
-      toggleOnlyContent () {
-        this.onlyContent = !this.onlyContent
-      },
 
       toggleShow () {
         this.isShow = !this.isShow
