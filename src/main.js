@@ -4,6 +4,11 @@ import router from './router'
 import store from './store'
 import './mock/mockServer'
 
+import Split from './components/Split/Split.vue'
+
+// 注册全局组件标签
+Vue.component('Split', Split)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

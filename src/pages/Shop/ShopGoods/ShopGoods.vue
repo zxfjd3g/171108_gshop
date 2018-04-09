@@ -17,7 +17,8 @@
           <li class="food-list-hook" v-for="(good, index) in shopGoods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
-              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods" :key="index">
+              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods"
+                  :key="index" @click="selectFood(food)">
                 <div class="icon">
                   <img width="57" height="57"
                        :src="food.icon">
@@ -44,6 +45,7 @@
       </div>
       <ShopCart/>
     </div>
+    <Food :food="food" ref="food"/>
   </div>
 </template>
 
@@ -52,6 +54,7 @@
   import {mapState} from 'vuex'
   import CartControl from '../../../components/CartControl/CartControl.vue'
   import ShopCart from '../../../components/ShopCart/ShopCart.vue'
+  import Food from '../../../components/Food/Food.vue'
 
   export default {
 
@@ -60,6 +63,7 @@
         supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special'],
         tops: [], //所有分类li的top组成的数组
         scrollY: 0, // 当前y轴滚动的坐标
+        food: {}
       }
     },
 
@@ -134,12 +138,20 @@
 
         // 右侧滚动到对应分类的位置
         this.rightScroll.scrollTo(0, y, 300)
+      },
+
+      selectFood (food) {
+        // 更新food状态
+        this.food = food
+        // 显示food组件
+        this.$refs.food.toggleShow()
       }
     },
 
     components: {
       CartControl,
-      ShopCart
+      ShopCart,
+      Food
     }
   }
 </script>
