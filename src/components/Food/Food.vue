@@ -21,7 +21,7 @@
         <div class="cartcontrol-wrapper" v-if="food.count">
           <CartControl :food="food"/>
         </div>
-        <div class="buy" v-else>加入购物车</div>
+        <div class="buy" v-else @click="addToCart">加入购物车</div>
       </div>
 
       <Split/>
@@ -35,15 +35,21 @@
 
       <div class="rating">
         <h1 class="title">商品评价</h1>
-        <div>RatingSelect组件</div>
+        <RatingSelect
+          :desc="{all: '全部', positive: '满意', negative: '不满意'}"
+          :ratings="food.ratings"
+          :selectType="selectType"
+          :onlyContent="onlyContent"
+          @setSelectType="setSelectType"
+          @toggleOnlyContent="toggleOnlyContent"/>
         <div class="rating-wrapper">
           <ul>
-            <li class="rating-item border-1px" v-for="(rating, index) in food.ratings" :key="index">
+            <li class="rating-item border-1px" v-for="(rating, index) in filterRatings" :key="index">
               <div class="user">
                 <span class="name">{{rating.username}}</span>
                 <img class="avatar" width="12" height="12" :src="rating.avatar">
               </div>
-              <div class="time">{{rating.rateTime}}</div>
+              <div class="time">{{rating.rateTime | dateString}}</div>
               <p class="text">
                 <span class="iconfont"
                       :class="rating.rateType===0 ? 'icon-thumb_up' : 'icon-thumb_down'"></span>{{rating.text}}
@@ -57,7 +63,9 @@
 </template>
 
 <script>
+  import BScroll from 'better-scroll'
   import CartControl from '../CartControl/CartControl.vue'
+  import RatingSelect from '../RatingSelect/RatingSelect.vue'
 
   export default {
     props: {
@@ -66,18 +74,65 @@
 
     data () {
       return {
-        isShow: false
+        isShow: false,
+        selectType: 0,
+        onlyContent: false
+      }
+    },
+
+    computed: {
+      filterRatings () {
+        const {selectType, onlyContent} = this
+        const {ratings} = this.food
+
+        return ratings.filter(rating => {
+          const {rateType, text} = rating
+          // 条件1:
+            // selectType: 0/1/2
+            // rateType: 0/1
+            // selectType===2 || selectType===rateType
+          // 条件2:
+            // onlyContent: true/false
+            // text: 有值/没值
+            // !onlyContent || text.length>0
+
+          return (selectType===2 || selectType===rateType) && (!onlyContent || text.length>0)
+        })
       }
     },
 
     methods: {
+
+      setSelectType (selectType) {
+        this.selectType = selectType
+      },
+
+      toggleOnlyContent () {
+        this.onlyContent = !this.onlyContent
+      },
+
       toggleShow () {
         this.isShow = !this.isShow
+
+        if(this.isShow) {
+          this.$nextTick(() => {
+            if(!this.scroll) {
+              this.scroll = new BScroll('.food', {
+                click: true
+              })
+            }
+          })
+        }
+      },
+
+      addToCart () {
+        this.$store.dispatch('updateFoodCount', {food: this.food, isAdd: true})
       }
     },
 
     components: {
-      CartControl
+      CartControl,
+      RatingSelect
     }
   }
 </script>
