@@ -74,7 +74,7 @@
 
     data () {
       return {
-        isShow: false,
+        isShow: false, // 是否显示
         selectType: 0,
         onlyContent: false
       }
