@@ -160,12 +160,26 @@
 
 # day05
 ## 1. Food组件
-
+    1). 父子组件:
+        子组件调用父组件的方法: 通过props将方法传递给子组件
+        父组件调用子组件的方法: 通过ref找到子组件标签对象
+    2). vue的自定义事件
+        在父组件中, 给子组件对象绑定事件监听: @setSelectType="setSelectType"
+        在子组件中, 分发/触发事件: $emit('setSelectType', selectType)
+    3). 列表过滤效果
+        使用计算属性
+        过滤条件分析
 ## 2. RatingSelect组件
-
+    props的设计
+    
 ## 3. ShopRatings组件
+    1). 异步获取商家的ratings数据显示列表
+    2). 使用Vue组件的mixins技术实现多组件代码的复用
 
 ## 4. ShopInfo组件
+    1). 动态操作样式
+    2). 解决刷新当前组件路由时异常的问题
+    3). 使用localStorage保存数据
 
 ## 5. 优化
 
