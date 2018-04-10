@@ -22,7 +22,8 @@
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
             <h1 class="title">购物车</h1>
-            <span class="empty" @click="clearCart">清空</span>
+            <!--<span class="empty" @click="clearCart">清空</span>-->
+            <mt-button style="float: right" type="danger" @click.native="clearCart">清空</mt-button>
           </div>
           <div class="list-content">
             <ul>
@@ -47,6 +48,7 @@
 <script>
   import BScroll from 'better-scroll'
   import {mapState, mapGetters} from 'vuex'
+  import { MessageBox, Toast } from 'mint-ui'  // 吐司
   import CartControl from '../CartControl/CartControl.vue'
 
   export default {
@@ -118,7 +120,24 @@
       },
 
       clearCart () {
-        this.$store.dispatch('clearCart')
+        /*if(window.confirm('确定清空购物车吗?')) {
+          this.$store.dispatch('clearCart')
+        }*/
+
+        MessageBox.confirm('确定清空购物车吗?').then(
+          action => {// 点击确定
+            this.$store.dispatch('clearCart')
+            Toast({
+              message: '清除成功',
+              // position: 'bottom',
+              duration: 2000
+            });
+          },
+          action => {
+            // alert('点击了取消')
+          } // 点击取消
+        );
+
       }
     },
 
